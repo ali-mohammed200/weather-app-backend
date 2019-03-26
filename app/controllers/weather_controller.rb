@@ -3,7 +3,7 @@ require 'dotenv/load'
 
 class WeatherController < ApplicationController
   def index
-    byebug
+    # byebug
     myWeather = Weather.getWeatherfor("london")
     # response_string = RestClient.get("api.openweathermap.org/data/2.5/forecast?q=London#{ENV['KEY']}")
     # response_hash = JSON.parse(response_string)
@@ -14,11 +14,29 @@ class WeatherController < ApplicationController
     @weather = {test: myWeather}
     render json: @weather
   end
+
+  def ipLoc
+    # byebug
+    myWeather = Weather.getWeatherfor(location_params["location"])
+    fiveday = myWeather["list"].select { |obj| obj["dt_txt"].include?("15:00:00") }
+    @weather = fiveday
+    render json: @weather
+  end
+
+  def findCity
+    @weather = {test: "findCity"}
+    render json: @weather
+  end
+
+  private
+  def location_params
+    params.permit(:location)
+  end
 end
 
 
-#Weather => api.openweathermap.org/data/2.5/weather?q=London#{ENV['KEY']}
-#Forecast => api.openweathermap.org/data/2.5/forecast?q=London#{ENV['KEY']}
+#Weather => api.openweathermap.org/data/2.5/weather?q=London&units=imperial#{ENV['KEY']}
+#Forecast => api.openweathermap.org/data/2.5/forecast?q=London&units=imperial#{ENV['KEY']}
 
 
 ### date-time
@@ -27,7 +45,7 @@ end
 ###
 
 ###
-# to have a custom location inputted by the user and 
+# to have a custom location inputted by the user and
 # passed to the controller, you will need a form with
 # a post request that will be routed with a post
 # request which will then fire off the appropriate
